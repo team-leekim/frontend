@@ -4,6 +4,7 @@ import NewsDesk from '@/components/NewsDesk';
 import RecommendCard from '@/components/viewer/RecommendCard';
 import InterestSection from '@/components/section/InterestSection';
 import Divider from '@/components/section/Divider';
+import EmotionNewsSection from '@/components/section/EmotionNewsSection';
 
 export default function Home() {
   const items = [1, 2, 3, 4].map((n) => (
@@ -37,6 +38,9 @@ export default function Home() {
       <Divider />
       <InterestSection isLoggedIn={true} />
       <Divider />
+
+      <h3 className="typo-h3 mx-auto mt-4 mb-6 max-w-97.5 px-4">오늘의 행복한 뉴스</h3>
+      <EmotionNewsSection />
     </main>
   );
 }
