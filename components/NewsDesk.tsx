@@ -23,7 +23,6 @@ export default function NewsDesk() {
 
       <AudioButton />
 
-      {/* 👇 여기 */}
       <HeadlineSlider titles={headlines} />
     </div>
   );

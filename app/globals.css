@@ -336,6 +336,14 @@
   font-weight: var(--typo-body-5-r-weight);
 }
 
+/* Subtitle */
+.typo-subtitle-1 {
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 700;
+  text-align: center;
+}
+
 /* Button */
 .typo-btn-1-b {
   font-size: var(--typo-btn-1-b-size);

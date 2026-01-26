@@ -1,26 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
 
 import 'swiper/css';
-import 'swiper/css/pagination';
 
 interface MainViewerProps {
   items: React.ReactNode[];
 }
 
 export default function MainViewer({ items }: MainViewerProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
-    <div className="h-full w-full">
+    <div className="flex w-full flex-col items-center">
       <Swiper
-        modules={[Pagination]}
         slidesPerView={1}
-        pagination={{
-          clickable: true,
-          dynamicBullets: true,
-        }}
-        className="h-full w-full"
+        onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+        className="h-[350px] w-[358px]"
       >
         {items.map((item, idx) => (
           <SwiperSlide key={idx} className="flex justify-center">
@@ -28,6 +25,17 @@ export default function MainViewer({ items }: MainViewerProps) {
           </SwiperSlide>
         ))}
       </Swiper>
+
+      <div className="mt-3 flex gap-2">
+        {items.map((_, idx) => (
+          <span
+            key={idx}
+            className={`h-2 w-2 rounded-full transition-colors ${
+              idx === activeIndex ? 'bg-gray-800' : 'bg-gray-300'
+            }`}
+          />
+        ))}
+      </div>
     </div>
   );
 }
