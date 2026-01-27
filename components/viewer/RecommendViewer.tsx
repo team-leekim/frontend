@@ -2,9 +2,11 @@
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import { CurationItem } from '@/types/CurationContent';
+import RecommendCard from './RecommendCard';
 
 interface RecommendViewerProps {
-  items: React.ReactNode[];
+  items: CurationItem[];
 }
 
 export default function RecommendViewer({ items }: RecommendViewerProps) {
@@ -18,8 +20,10 @@ export default function RecommendViewer({ items }: RecommendViewerProps) {
         watchSlidesProgress
         className="flex justify-center overflow-visible!"
       >
-        {items.map((item, idx) => (
-          <SwiperSlide key={idx}>{item}</SwiperSlide>
+        {items.map((item) => (
+          <SwiperSlide key={item.id}>
+            <RecommendCard title={item.title} category={item.category} coverImage={item.imageUrl} />
+          </SwiperSlide>
         ))}
       </Swiper>
       <style jsx global>{`
