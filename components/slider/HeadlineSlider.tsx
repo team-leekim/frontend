@@ -43,9 +43,9 @@ export default function HeadlineSlider({ titles }: HeadlineSliderProps) {
           <SwiperSlide key={idx}>
             {({ isActive }) => (
               <div
-                className={`border-navy-100 flex w-full items-center justify-center rounded-lg border ${
+                className={`flex w-full items-center justify-center rounded-lg ${
                   isActive
-                    ? 'shadow-card h-[48px] w-[300px] border bg-white px-3 py-3 text-[16px] opacity-100'
+                    ? 'shadow-card border-navy-100 h-[48px] w-[300px] border bg-white px-3 py-3 text-[16px] opacity-100'
                     : 'h-[38.4px] bg-transparent px-1 py-[9.6px] text-[12.8px] opacity-40'
                 }`}
               >

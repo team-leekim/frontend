@@ -28,7 +28,7 @@ export default function NewsDetailPage({ params }: Props) {
                 key={img.order}
                 src={img.imageUrl}
                 alt={`content-image-${img.order}`}
-                className="h-[350px] w-[358px] rounded-2xl object-cover"
+                className="h-[358px] w-[358px] rounded-2xl object-cover"
               />
             ))}
           />
