@@ -1,10 +1,21 @@
 'use client';
-//활성화 됐을때랑 안 됐을 때랑 구분해서 디자인 확정되면 수정하기
-const EmotionButton = () => {
+
+interface EmotionButtonProps {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}
+
+const EmotionButton = ({ label, active, onClick }: EmotionButtonProps) => {
   return (
-    <div className="bg-black-500 box-border flex h-[40px] items-center rounded-full p-4">
-      <p className="typo-btn-1-b text-text-1-w">행복해요</p>
-    </div>
+    <button
+      onClick={onClick}
+      className={`flex h-[40px] items-center rounded-full px-4 ${
+        active ? 'bg-black-900 typo-btn-1-b text-white' : 'bg-black-0 text-black-400 typo-btn-1-r'
+      }`}
+    >
+      <p>{label}</p>
+    </button>
   );
 };
 

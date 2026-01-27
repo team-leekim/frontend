@@ -41,15 +41,14 @@ export default function Home() {
           <div className="flex h-122.5 flex-col justify-center">
             <div className="mb-4 flex h-[26px] items-center gap-1">
               <h3 className="typo-h3">오늘의 뉴스낵</h3>
-
               <Tooltip />
             </div>
             <NewsDesk />
           </div>
         </div>
         <Divider />
-        <div className="h-108 py-4">
-          <h3 className="typo-h3 mx-auto mb-6 max-w-97.5 px-4">분야별 인기 추천</h3>
+        <div className="py-6">
+          <h3 className="typo-h3 mx-auto max-w-97.5 px-4 pb-6">분야별 인기 추천</h3>
           <RecommendViewer items={curationMock} />
         </div>
         <Divider />
