@@ -38,7 +38,7 @@ export default function NewsDetailPage({ params }: Props) {
         </section>
 
         {/* Title, Editor */}
-        <header className="">
+        <header className="border-navy-500 mb-4 border-b">
           <h1 className="typo-h2 py-4">{data.title}</h1>
           <div className="flex items-center gap-[6px] pb-4 text-sm text-gray-500">
             <img
@@ -99,7 +99,6 @@ export default function NewsDetailPage({ params }: Props) {
             ))}
           </ul>
         </section>
-        <Divider />
         {/* Origin Articles */}
         <section>
           <h2 className="typo-h3 my-6 text-black">연관 기사를 더 보고 싶어요</h2>
