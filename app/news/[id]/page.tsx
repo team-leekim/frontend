@@ -1,6 +1,8 @@
 // app/news/[id]/page.tsx
 import MainViewer from '@/components/viewer/MainViewer';
 import { newsDetailMock } from '@/mocks/newsDetail.mock';
+import { Icon } from '@iconify/react';
+import EditorSection from '@/components/section/EditorSection';
 
 const formatDateTime = (value: string) => {
   const [date, time] = value.split(' ');
@@ -19,7 +21,7 @@ export default function NewsDetailPage({ params }: Props) {
 
   return (
     <main className="flex flex-col items-center justify-center">
-      <div className="w-[390px] p-4">
+      <div className="w-[390px] px-4 py-6">
         {/* Webtoon */}
         <section className="w-full">
           <MainViewer
@@ -34,15 +36,10 @@ export default function NewsDetailPage({ params }: Props) {
           />
         </section>
 
-        {/* Emotion */}
-        <section>
-          <p className="text-base">{data.userReaction ?? '아직 감정 표현 없음'}</p>
-        </section>
-
         {/* Title, Editor */}
-        <header className="space-y-2">
-          <h1 className="typo-h2">{data.title}</h1>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+        <header className="">
+          <h1 className="typo-h2 py-4">{data.title}</h1>
+          <div className="flex items-center gap-[6px] pb-4 text-sm text-gray-500">
             <img
               src={data.editor.imageUrl}
               alt={data.editor.name}
@@ -51,18 +48,18 @@ export default function NewsDetailPage({ params }: Props) {
             <span className="text-text-1 typo-subtitle-1 flex items-center">
               {data.editor.name}
             </span>
-            <span> {formatDateTime(data.publishedAt)}</span>
+            <span className="typo-body-5-r text-text-3"> {formatDateTime(data.publishedAt)}</span>
           </div>
         </header>
 
         {/* Summary */}
-        <section className="bg-navy-0">
-          <h2 className="text-text-1 typo-subtitle-1 rounded-sm p-4">
-            💡 바쁜 당신을 위한 팩트체크! AI 3줄 핵심 브리핑
+        <section className="bg-navy-0 flex flex-col gap-2 rounded-sm px-4 py-6">
+          <h2 className="text-text-1 typo-btn-1-b rounded-sm">
+            💡 바쁜 당신을 위한 핵심체크! AI 3줄 핵심 브리핑
           </h2>
-          <ul className="">
+          <ul className="text-text-2 typo-body-2-r px-2">
             {data.summary.map((s, i) => (
-              <li key={i} className="typo-body-4-r">
+              <li key={i} className="typo-body-2-r">
                 • {s}
               </li>
             ))}
@@ -70,20 +67,15 @@ export default function NewsDetailPage({ params }: Props) {
         </section>
 
         {/* Body */}
-        <article className="text-base whitespace-pre-line">{data.body}</article>
-
+        <article className="typo-body-1-r text-text-1 mt-6 mb-4 whitespace-pre-line">
+          {data.body}
+        </article>
+        <span className="text-text-3 typo-body-5-m mb-4 flex items-center gap-1">
+          <Icon icon="mingcute:ai-fill" width={14} height={14} className="text-navy-600" />
+          AI의 도움을 받아 작성된 글입니다.
+        </span>
         {/* Editor Info */}
-        <section className="space-y-2 rounded-lg border p-4">
-          <img
-            src={data.editor.imageUrl}
-            alt={data.editor.name}
-            className="h-6 w-6 rounded-full object-cover"
-          />
-          <span className="text-text-1 flex items-center text-[14px] leading-[17px] font-bold">
-            {data.editor.name}
-          </span>
-          <p className="text-sm text-gray-600">{data.editor.description}</p>
-        </section>
+        <EditorSection editor={data.editor} />
 
         {/* Reaction Stats */}
         <section>
