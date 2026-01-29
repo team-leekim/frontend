@@ -143,7 +143,9 @@ export default function TodayNewsPage() {
       `}</style>
 
       <div className="mx-auto w-[390px]">
+        {' '}
         <div className="relative aspect-[390/495] w-full overflow-hidden">
+          <img src="/logo-white.png" className="absolute top-[15px] left-[115px] z-10" />
           <video
             ref={videoRef}
             src="/news.mp4"
@@ -154,7 +156,7 @@ export default function TodayNewsPage() {
 
           {/* image frame */}
           <div
-            className="absolute top-[180px] left-1/2 flex h-[240px] w-[240px] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+            className="absolute top-[200px] left-1/2 flex h-[240px] w-[240px] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
             style={{
               background: 'rgba(148, 169, 206, 0.9)',
               boxShadow: '0px 1.45522px 14.5522px rgba(0, 0, 0, 0.1)',
@@ -186,7 +188,6 @@ export default function TodayNewsPage() {
             </button>
           )}
         </div>
-
         {/* marquee title */}
         <div className="relative h-[80px] w-full overflow-hidden border-t-2 border-b-2 border-white bg-[linear-gradient(90deg,#DCEFFF_0%,#FFFFFF_50%,#DCEFFF_100%)]">
           {startMarquee && (
@@ -202,9 +203,7 @@ export default function TodayNewsPage() {
             </div>
           )}
         </div>
-
         <audio ref={audioRef} src={todayNewsMock.content.audioUrl} playsInline />
-
         <NewsnackSlider items={items} />
       </div>
     </>

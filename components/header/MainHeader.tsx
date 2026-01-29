@@ -1,7 +1,12 @@
 'use client';
 
 const MainHeader = () => {
-  return <header className="bg-bg-4 mx-auto flex h-16 w-full max-w-full items-center"></header>;
+  return (
+    <header className="mx-auto flex w-[390px] items-end gap-2 p-4">
+      <img src="/logo-navy.png" alt="logo" />
+      <p className="typo-body-4-r text-navy-400 bottom-0">세상을 만나는 가벼운 시작</p>
+    </header>
+  );
 };
 
 export default MainHeader;
