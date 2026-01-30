@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   icons: {
     icon: '/icon.png',
   },
+  openGraph: {
+    title: 'Newsnack',
+    description: '세상을 만나는 가벼운 시작',
+    images: '/logo-white.png',
+  },
 };
 
 export default function RootLayout({
