@@ -3,7 +3,10 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Newsnack',
-  description: '신한해커톤 ~~~~',
+  description: '세상을 만나는 가벼운 시작',
+  icons: {
+    icon: '/icon.png',
+  },
 };
 
 export default function RootLayout({
