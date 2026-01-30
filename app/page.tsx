@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { WebtoonContent } from '@/types/webtoon';
 import { webtoonFeedMock } from '@/mocks/webtoonFeed';
 import WebtoonItem from '@/components/WebtoonItem';
@@ -11,12 +12,11 @@ import Divider from '@/components/section/Divider';
 import EmotionNewsSection from '@/components/section/EmotionNewsSection';
 import { curationMock } from '@/mocks/curation.mock';
 import Tooltip from '@/components/Tooltip';
-import Link from 'next/link';
 
 export default function Home() {
   const [webtoons, setWebtoons] = useState<WebtoonContent[]>(webtoonFeedMock.contents.slice(0, 5));
-
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -59,21 +59,20 @@ export default function Home() {
 
         <section className="flex flex-col gap-10 px-4 py-6">
           {webtoons.map((item) => (
-            <Link
-              key={item.id} // ⭐ 여기
-              href={`/news/${item.id}`}
-              className="block"
-            >
-              <WebtoonItem
-                editor={item.editor}
-                title={item.title}
-                publishedAt={item.publishedAt}
-                images={item.imageUrls.map((url, index) => ({
-                  order: index,
-                  imageUrl: url,
-                }))}
-              />
-            </Link>
+            <WebtoonItem
+              key={item.id}
+              id={item.id}
+              editor={item.editor}
+              title={item.title}
+              publishedAt={item.publishedAt}
+              images={item.imageUrls.map((url, index) => ({
+                order: index,
+                imageUrl: url,
+              }))}
+              onArticleClick={() => {
+                router.push(`/news/${item.id}`);
+              }}
+            />
           ))}
           <div ref={loaderRef} className="h-10" />
         </section>

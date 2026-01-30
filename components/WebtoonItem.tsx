@@ -1,6 +1,9 @@
+// components/WebtoonItem.tsx
+'use client';
+
 import { formatPublishedAt } from '@/utils/time';
 import MainViewer from './viewer/MainViewer';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface WebtoonImage {
   order: number;
@@ -18,15 +21,38 @@ interface WebtoonItemProps {
   title: string;
   publishedAt: string;
   images: WebtoonImage[];
+  id: number;
+  onArticleClick?: () => void;
 }
 
-export default function WebtoonItem({ editor, title, publishedAt, images }: WebtoonItemProps) {
+export default function WebtoonItem({
+  editor,
+  title,
+  publishedAt,
+  images,
+  id,
+  onArticleClick,
+}: WebtoonItemProps) {
+  const router = useRouter();
+
   return (
-    <article className="flex flex-col gap-3">
+    <article
+      className="flex cursor-pointer flex-col gap-3"
+      onClick={() => {
+        if (onArticleClick) {
+          onArticleClick();
+        } else {
+          router.push(`/news/${id}`);
+        }
+      }}
+    >
       {/* editor info */}
-      <Link
-        href={`/editor/${editor.id}`}
-        className="flex items-center gap-3 transition-opacity hover:opacity-80"
+      <div
+        onClick={(e) => {
+          e.stopPropagation(); // 뉴스 페이지 이동 방지
+          router.push(`/editor/${editor.id}`);
+        }}
+        className="flex cursor-pointer items-center gap-3"
       >
         <img
           src={editor.imageUrl}
@@ -37,7 +63,7 @@ export default function WebtoonItem({ editor, title, publishedAt, images }: Webt
           <span className="typo-h4 text-sm text-gray-700">{editor.name}</span>
           <span className="typo-body-4-r text-[#757575]">{formatPublishedAt(publishedAt)}</span>
         </div>
-      </Link>
+      </div>
 
       <section className="w-full overflow-hidden">
         <MainViewer
@@ -53,6 +79,7 @@ export default function WebtoonItem({ editor, title, publishedAt, images }: Webt
             ))}
         />
       </section>
+
       {/* title */}
       <h2 className="text-black-900 typo-body-1-m">{title}</h2>
     </article>

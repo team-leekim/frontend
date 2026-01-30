@@ -4,6 +4,7 @@ import { newsDetailMock } from '@/mocks/newsDetail.mock';
 import { Icon } from '@iconify/react';
 import EditorSection from '@/components/section/EditorSection';
 import Divider from '@/components/section/Divider';
+import Link from 'next/link';
 
 const formatDateTime = (value: string) => {
   const [date, time] = value.split(' ');
@@ -42,14 +43,16 @@ export default async function NewsDetailPage({ params }: Props) {
         <header className="border-navy-100 mb-4 border-b">
           <h1 className="typo-h2 py-4">{data.title}</h1>
           <div className="flex items-center gap-[6px] pb-4 text-sm text-gray-500">
-            <img
-              src={data.editor.imageUrl}
-              alt={data.editor.name}
-              className="h-6 w-6 rounded-full object-cover"
-            />
-            <span className="text-text-1 typo-subtitle-1 flex items-center">
-              {data.editor.name}
-            </span>
+            <Link href={`/editor/${data.editor.id}`} className="block flex gap-[6px]">
+              <img
+                src={data.editor.imageUrl}
+                alt={data.editor.name}
+                className="h-6 w-6 rounded-full object-cover"
+              />
+              <span className="text-text-1 typo-subtitle-1 flex items-center">
+                {data.editor.name}
+              </span>
+            </Link>
             <span className="typo-body-5-r text-text-3"> {formatDateTime(data.publishedAt)}</span>
           </div>
         </header>
@@ -77,7 +80,9 @@ export default async function NewsDetailPage({ params }: Props) {
           AI의 도움을 받아 작성된 글입니다.
         </span>
         {/* Editor Info */}
-        <EditorSection editor={data.editor} />
+        <Link href={`/editor/${data.editor.id}`}>
+          <EditorSection editor={data.editor} />
+        </Link>
 
         {/* Reaction Stats */}
         <section>
