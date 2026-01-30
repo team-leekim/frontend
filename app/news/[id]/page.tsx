@@ -12,12 +12,13 @@ const formatDateTime = (value: string) => {
 };
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export default function NewsDetailPage({ params }: Props) {
+export default async function NewsDetailPage({ params }: Props) {
+  const { id } = await params;
   const data = newsDetailMock; // 나중에 fetch로 교체
 
   return (
