@@ -1,5 +1,6 @@
 import { formatPublishedAt } from '@/utils/time';
 import MainViewer from './viewer/MainViewer';
+import Link from 'next/link';
 
 interface WebtoonImage {
   order: number;
@@ -23,7 +24,10 @@ export default function WebtoonItem({ editor, title, publishedAt, images }: Webt
   return (
     <article className="flex flex-col gap-3">
       {/* editor info */}
-      <div className="flex items-center gap-3">
+      <Link
+        href={`/editor/${editor.id}`}
+        className="flex items-center gap-3 transition-opacity hover:opacity-80"
+      >
         <img
           src={editor.imageUrl}
           alt={editor.name}
@@ -33,7 +37,7 @@ export default function WebtoonItem({ editor, title, publishedAt, images }: Webt
           <span className="typo-h4 text-sm text-gray-700">{editor.name}</span>
           <span className="typo-body-4-r text-[#757575]">{formatPublishedAt(publishedAt)}</span>
         </div>
-      </div>
+      </Link>
 
       <section className="w-full overflow-hidden">
         <MainViewer
