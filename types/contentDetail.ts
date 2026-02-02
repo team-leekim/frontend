@@ -1,6 +1,7 @@
 //뉴스 상세 정보
+import { ContentType } from './content';
+import { EmotionType } from './emotionBest';
 
-export type ContentType = 'WEBTOON' | 'CARDNEWS';
 export type CategoryType =
   | '정치'
   | '경제'
@@ -12,8 +13,6 @@ export type CategoryType =
   | '연예'
   | '라이프'
   | '기타';
-
-export type ReactionType = 'HAPPY' | 'SURPRISED' | 'SAD' | 'ANGRY' | 'EMPATHY';
 
 export interface ContentEditorDetail {
   id: number;
@@ -42,7 +41,7 @@ export interface ContentDetailResponse {
   editor: ContentEditorDetail;
   imageUrls: string[];
 
-  reactionStats: Record<ReactionType, number>;
+  reactionStats: Record<EmotionType, number>;
 
   originalArticles: OriginalArticle[];
 }
