@@ -1,7 +1,8 @@
 'use client';
 import NewsnackSlider from '@/components/slider/NewsnackSilder';
 import { useEffect, useRef, useState } from 'react';
-import { todayNewsMock } from '@/mocks/todayNewsMock';
+import { getTodayNewsSnack } from '@/api/newsnack';
+import { TodayNewsSnackResponse } from '@/types/newsnack';
 
 export default function TodayNewsPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -11,6 +12,17 @@ export default function TodayNewsPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [startMarquee, setStartMarquee] = useState(false);
+  const [data, setData] = useState<TodayNewsSnackResponse | null>(null);
+
+  useEffect(() => {
+    getTodayNewsSnack()
+      .then((res) => {
+        setData(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -53,7 +65,7 @@ export default function TodayNewsPage() {
 
     const onTimeUpdate = () => {
       const currentTime = audio.currentTime;
-      const scripts = todayNewsMock.content.script;
+      const scripts = data?.content.script ?? [];
 
       const index = scripts.findIndex(
         (item) => currentTime >= item.startTime && currentTime < item.endTime
@@ -69,7 +81,7 @@ export default function TodayNewsPage() {
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate);
     };
-  }, [activeIndex]);
+  }, [activeIndex, data]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -104,10 +116,11 @@ export default function TodayNewsPage() {
     setStartMarquee(true);
   };
 
-  const items = todayNewsMock.articles.map((article) => ({
-    id: article.id,
-    title: article.title,
-  }));
+  const items =
+    data?.articles.map((article) => ({
+      id: article.id,
+      title: article.title,
+    })) ?? [];
 
   return (
     <>
@@ -166,7 +179,7 @@ export default function TodayNewsPage() {
           >
             {isPlaying && (
               <img
-                src={todayNewsMock.content.imageUrls[activeIndex]}
+                src={data?.content.imageUrls[activeIndex]}
                 alt=""
                 className="h-[200px] w-[200px] object-cover"
               />
@@ -180,7 +193,7 @@ export default function TodayNewsPage() {
                 const audio = audioRef.current;
                 if (!audio) return;
                 const prevIndex = activeIndex - 1;
-                audio.currentTime = todayNewsMock.content.script[prevIndex].startTime;
+                audio.currentTime = data?.content.script[prevIndex]?.startTime ?? 0;
                 setActiveIndex(prevIndex);
               }}
               className="absolute top-[200px] left-4 flex h-[48px] w-[48px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40"
@@ -189,13 +202,13 @@ export default function TodayNewsPage() {
             </button>
           )}
 
-          {activeIndex < todayNewsMock.articles.length - 1 && (
+          {activeIndex < (data?.articles.length ?? 0) - 1 && (
             <button
               onClick={() => {
                 const audio = audioRef.current;
                 if (!audio) return;
                 const nextIndex = activeIndex + 1;
-                audio.currentTime = todayNewsMock.content.script[nextIndex].startTime;
+                audio.currentTime = data?.content.script[nextIndex]?.startTime ?? 0;
                 setActiveIndex(nextIndex);
               }}
               className="absolute top-[200px] right-4 flex h-[48px] w-[48px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40"
@@ -228,13 +241,13 @@ export default function TodayNewsPage() {
                   key={`title-a-${activeIndex}`}
                   className="animate-title-fade inline-block flex-shrink-0 pr-16"
                 >
-                  {todayNewsMock.articles[activeIndex]?.title}
+                  {data?.articles[activeIndex]?.title}
                 </span>
               </div>
             </div>
           )}
         </div>
-        <audio ref={audioRef} src={todayNewsMock.content.audioUrl} playsInline />
+        <audio ref={audioRef} src={data?.content.audioUrl ?? ''} playsInline />
         <NewsnackSlider items={items} />
       </div>
     </>
