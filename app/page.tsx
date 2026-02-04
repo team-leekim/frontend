@@ -23,6 +23,7 @@ export default function Home() {
   const [todayArticles, setTodayArticles] = useState<{ id: number; title: string }[]>([]);
   const router = useRouter();
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const isLoadingRef = useRef(false);
 
   // 무한 스크롤용 뉴스 콘텐츠 상태
   const [contents, setContents] = useState<ContentItem[]>([]);
@@ -63,8 +64,9 @@ export default function Home() {
 
   // 커서 기반 무한 스크롤 데이터 로딩
   const loadMore = async () => {
-    if (!hasNext || isLoading) return;
+    if (!hasNext || isLoadingRef.current) return;
 
+    isLoadingRef.current = true;
     setIsLoading(true);
     try {
       const res = await getContents({
@@ -78,6 +80,7 @@ export default function Home() {
     } catch (e) {
       console.error(e);
     } finally {
+      isLoadingRef.current = false;
       setIsLoading(false);
     }
   };
