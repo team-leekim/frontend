@@ -4,8 +4,8 @@ import EditorNewsCard from '@/components/EditorNewsCard';
 import { getEditorDetail } from '@/api/editor';
 import { EditorDetailResponse } from '@/types/editor';
 
-export default async function EditorPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function EditorPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   let editor: EditorDetailResponse | null = null;
 
