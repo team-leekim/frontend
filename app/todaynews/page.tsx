@@ -18,17 +18,17 @@ export default function TodayNewsPage() {
     getTodayNewsSnack()
       .then((res) => {
         setData(res.data);
+        console.log('[API] today news snack response', res.data);
       })
       .catch((err) => {
-        console.error(err);
+        console.error('[API Error]', err);
       });
   }, []);
 
+  // 비디오 역재생 효과
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    // use rafRef instead of local variable
 
     const playBackward = () => {
       if (!video) return;
@@ -59,19 +59,25 @@ export default function TodayNewsPage() {
     };
   }, []);
 
+  // 오디오 시간에 따른 스크립트 하이라이트
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+
+    if (!audio || !data?.script || data.script.length === 0) {
+      console.log('[timeupdate] waiting for data...');
+      return;
+    }
 
     const onTimeUpdate = () => {
       const currentTime = audio.currentTime;
-      const scripts = data?.content.script ?? [];
+      const scripts = data.script;
 
       const index = scripts.findIndex(
         (item) => currentTime >= item.startTime && currentTime < item.endTime
       );
 
       if (index !== -1 && index !== activeIndex) {
+        console.log('[timeupdate] active index changed:', index);
         setActiveIndex(index);
       }
     };
@@ -81,8 +87,9 @@ export default function TodayNewsPage() {
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate);
     };
-  }, [activeIndex, data]);
+  }, [data, activeIndex]);
 
+  // 오디오 종료 시 처리
   useEffect(() => {
     const audio = audioRef.current;
     const video = videoRef.current;
@@ -105,15 +112,60 @@ export default function TodayNewsPage() {
     };
   }, []);
 
-  const handlePlay = () => {
+  // 오디오 이벤트 로깅
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) {
+      console.log('[audio effect] audio element not ready');
+      return;
+    }
+
+    const log = (e: Event) => console.log('[audio event]', e.type);
+
+    audio.addEventListener('loadedmetadata', log);
+    audio.addEventListener('canplay', log);
+    audio.addEventListener('play', log);
+    audio.addEventListener('pause', log);
+    audio.addEventListener('error', log);
+
+    return () => {
+      audio.removeEventListener('loadedmetadata', log);
+      audio.removeEventListener('canplay', log);
+      audio.removeEventListener('play', log);
+      audio.removeEventListener('pause', log);
+      audio.removeEventListener('error', log);
+    };
+  }, [data]);
+
+  // 재생 핸들러
+  const handlePlay = async () => {
+    console.log('[handlePlay] called');
     const video = videoRef.current;
     const audio = audioRef.current;
-    if (!video || !audio) return;
 
-    video.play();
-    audio.play();
-    setIsPlaying(true);
-    setStartMarquee(true);
+    if (!video || !audio) {
+      console.error('[handlePlay] video or audio ref is null');
+      return;
+    }
+
+    // 데이터 로드 확인
+    if (!data) {
+      console.error('[handlePlay] data not loaded yet');
+      return;
+    }
+
+    console.log('[handlePlay] audio src:', audio.src);
+    console.log('[handlePlay] audio readyState:', audio.readyState);
+    console.log('[handlePlay] audio paused:', audio.paused);
+
+    try {
+      await audio.play();
+      video.play();
+      setIsPlaying(true);
+      setStartMarquee(true);
+    } catch (e) {
+      console.error('[handlePlay] audio play failed', e);
+    }
   };
 
   const items =
@@ -121,6 +173,15 @@ export default function TodayNewsPage() {
       id: article.id,
       title: article.title,
     })) ?? [];
+
+  // 로딩 상태
+  if (!data) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>로딩 중...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -164,7 +225,7 @@ export default function TodayNewsPage() {
             src="/news.mp4"
             muted
             playsInline
-            className="absolute inset-0 h-full w-full object-cover"
+            className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
           />
 
           {/* image frame */}
@@ -179,7 +240,7 @@ export default function TodayNewsPage() {
           >
             {isPlaying && (
               <img
-                src={data?.content.imageUrls?.[activeIndex]}
+                src={data?.articles?.[activeIndex]?.imageUrl}
                 alt=""
                 className="h-[200px] w-[200px] object-cover"
               />
@@ -193,7 +254,7 @@ export default function TodayNewsPage() {
                 const audio = audioRef.current;
                 if (!audio) return;
                 const prevIndex = activeIndex - 1;
-                audio.currentTime = data?.content.script?.[prevIndex]?.startTime ?? 0;
+                audio.currentTime = data?.script?.[prevIndex]?.startTime ?? 0;
                 setActiveIndex(prevIndex);
               }}
               className="absolute top-[200px] left-4 flex h-[48px] w-[48px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40"
@@ -208,7 +269,7 @@ export default function TodayNewsPage() {
                 const audio = audioRef.current;
                 if (!audio) return;
                 const nextIndex = activeIndex + 1;
-                audio.currentTime = data?.content.script?.[nextIndex]?.startTime ?? 0;
+                audio.currentTime = data?.script?.[nextIndex]?.startTime ?? 0;
                 setActiveIndex(nextIndex);
               }}
               className="absolute top-[200px] right-4 flex h-[48px] w-[48px] -translate-y-1/2 items-center justify-center rounded-full bg-black/40"
@@ -226,7 +287,7 @@ export default function TodayNewsPage() {
           {!isPlaying && (
             <button
               onClick={handlePlay}
-              className="absolute top-1/2 left-1/2 flex h-[80px] w-[80px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/40"
+              className="pointer-events-auto absolute top-1/2 left-1/2 z-30 flex h-[80px] w-[80px] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/40"
             >
               <img src="/start.svg" className="ml-1" />
             </button>
@@ -247,7 +308,7 @@ export default function TodayNewsPage() {
             </div>
           )}
         </div>
-        <audio ref={audioRef} src={data?.content.audioUrl ?? ''} playsInline />
+        <audio ref={audioRef} src={data?.audioUrl} preload="auto" playsInline />
         <NewsnackSlider items={items} />
       </div>
     </>

@@ -4,12 +4,6 @@ export interface NewsSnackScript {
   title: string;
 }
 
-export interface TodayNewsSnackContent {
-  audioUrl: string;
-  script: NewsSnackScript[];
-  imageUrls: string[];
-}
-
 export interface NewsSnackArticle {
   id: number;
   title: string;
@@ -17,6 +11,9 @@ export interface NewsSnackArticle {
 }
 
 export interface TodayNewsSnackResponse {
-  content: TodayNewsSnackContent;
-  articles: NewsSnackArticle[];
+  audioUrl: string;
+  script: NewsSnackScript[];
+  articles: (NewsSnackArticle & {
+    imageUrl: string;
+  })[];
 }
