@@ -3,13 +3,13 @@ import { getContentDetail } from '@/api/content';
 import { ContentDetailResponse } from '@/types/contentDetail';
 
 type PageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function NewsDetailPage({ params }: PageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   let data: ContentDetailResponse | null = null;
 
