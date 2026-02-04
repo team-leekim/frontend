@@ -1,4 +1,5 @@
-export function convertUTCtoKST(utcString: string): Date {
+export function convertUTCtoKST(utcString?: string): Date {
+  if (!utcString) return new Date();
   const match = utcString.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/);
   if (!match) return new Date(utcString); // fallback
   const [_, year, month, day, hour, minute] = match;
@@ -7,7 +8,8 @@ export function convertUTCtoKST(utcString: string): Date {
 }
 
 // UTC 문자열 → KST Date → YYYY.MM.DD HH:mm 문자열
-export function formatKSTDateTime(utcString: string): string {
+export function formatKSTDateTime(utcString?: string): string {
+  if (!utcString) return '';
   // "YYYY-MM-DD HH:mm" → [year, month, day, hour, minute]
   const match = utcString.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/);
   if (!match) return utcString;

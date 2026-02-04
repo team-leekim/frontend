@@ -2,6 +2,7 @@
 'use client';
 
 import { postContentReaction } from '@/api/content';
+import { useState } from 'react';
 import MainViewer from '@/components/viewer/MainViewer';
 import { Icon } from '@iconify/react';
 import EditorSection from '@/components/section/EditorSection';
@@ -10,16 +11,22 @@ import Link from 'next/link';
 import { convertUTCtoKST, formatKSTDateTime } from '@/utils/time';
 import { ContentDetailResponse } from '@/types/contentDetail';
 
-export default function NewsDetailClient({
-  id,
-  data,
-}: {
-  id: string;
-  data: ContentDetailResponse;
-}) {
+export default function NewsDetailClient({ data }: { data: ContentDetailResponse }) {
+  const normalizeReactionStats = (stats: Record<string, number>) => ({
+    ANGRY: stats.angry ?? 0,
+    SURPRISED: stats.surprised ?? 0,
+    HAPPY: stats.happy ?? 0,
+    EMPATHY: stats.empathy ?? 0,
+    SAD: stats.sad ?? 0,
+  });
+  const [reactionStats, setReactionStats] = useState(normalizeReactionStats(data.reactionStats));
   const handleReactionClick = async (type: 'ANGRY' | 'SURPRISED' | 'HAPPY' | 'EMPATHY' | 'SAD') => {
     try {
-      await postContentReaction(Number(id), { type });
+      await postContentReaction(Number(data.id), { type });
+      setReactionStats((prev) => ({
+        ...prev,
+        [type]: (prev[type] ?? 0) + 1,
+      }));
     } catch (e) {
       console.error(e);
     }
@@ -111,7 +118,7 @@ export default function NewsDetailClient({
                 >
                   <img src={image} alt={label} className="h-11 w-11 object-contain" />
                   <span className="typo-body-5-m text-text-1">{label}</span>
-                  <span className="typo-body-5-m text-text-1">{data.reactionStats[key] ?? 0}</span>
+                  <span className="typo-body-5-m text-text-1">{reactionStats[key] ?? 0}</span>
                 </li>
               ))}
             </ul>

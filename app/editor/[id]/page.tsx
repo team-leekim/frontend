@@ -1,17 +1,20 @@
 // app/editor/[id]/page.tsx
-import { editorsMock } from '@/mocks/editor.mock';
 import EditorSection from '@/components/section/EditorSection';
 import EditorNewsCard from '@/components/EditorNewsCard';
+import { getEditorDetail } from '@/api/editor';
+import { EditorDetailResponse } from '@/types/editor';
 
-type Props = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
-export default async function EditorPage({ params }: Props) {
+export default async function EditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const editor = editorsMock.find((e) => e.id === Number(id));
+
+  let editor: EditorDetailResponse | null = null;
+
+  try {
+    const res = await getEditorDetail(Number(id));
+    editor = res.data;
+  } catch (error) {
+    console.error(error);
+  }
 
   if (!editor) {
     return <div>에디터를 찾을 수 없습니다.</div>;
