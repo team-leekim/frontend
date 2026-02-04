@@ -87,6 +87,7 @@ export default function Home() {
 
   // 화면 하단 감지 시 다음 페이지 요청
   useEffect(() => {
+    const currentLoader = loaderRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -96,9 +97,9 @@ export default function Home() {
       { threshold: 1 }
     );
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    if (currentLoader) observer.observe(currentLoader);
     return () => observer.disconnect();
-  }, [loaderRef.current, hasNext, isLoading]);
+  }, [hasNext]);
 
   // RecommendViewer에서 쓰기 위한 카테고리 큐레이션 데이터 가공
   const categoryCurationItems = categoryBest.map((item) => ({
