@@ -10,16 +10,10 @@ import Link from 'next/link';
 import { convertUTCtoKST, formatKSTDateTime } from '@/utils/time';
 import { ContentDetailResponse } from '@/types/contentDetail';
 
-export default function NewsDetailClient({
-  id,
-  data,
-}: {
-  id: string;
-  data: ContentDetailResponse;
-}) {
+export default function NewsDetailClient({ data }: { data: ContentDetailResponse }) {
   const handleReactionClick = async (type: 'ANGRY' | 'SURPRISED' | 'HAPPY' | 'EMPATHY' | 'SAD') => {
     try {
-      await postContentReaction(Number(id), { type });
+      await postContentReaction(Number(data.id), { type });
     } catch (e) {
       console.error(e);
     }

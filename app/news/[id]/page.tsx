@@ -24,5 +24,5 @@ export default async function NewsDetailPage({ params }: PageProps) {
     return <div>뉴스를 불러올 수 없습니다.</div>;
   }
 
-  return <NewsDetailClient id={id} data={data} />;
+  return <NewsDetailClient data={data} />;
 }
