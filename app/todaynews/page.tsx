@@ -8,7 +8,10 @@ import Image from 'next/image';
 export default function TodayNewsPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const directionRef = useRef<'forward' | 'backward'>('forward');
-  const rafRef = useRef<number | null>(null);
+  const isPlayingVideoRef = useRef(false);
+  const loopIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const backwardIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,153 +22,125 @@ export default function TodayNewsPage() {
     getTodayNewsSnack()
       .then((res) => {
         setData(res.data);
-        console.log('[API] today news snack response', res.data);
       })
       .catch((err) => {
-        console.error('[API Error]', err);
+        console.error(err);
       });
   }, []);
 
-  // 비디오 역재생 효과
-  useEffect(() => {
+  const startVideoLoop = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    const playBackward = () => {
-      if (!video) return;
+    if (loopIntervalRef.current) {
+      clearInterval(loopIntervalRef.current);
+    }
+    if (backwardIntervalRef.current) {
+      clearInterval(backwardIntervalRef.current);
+    }
 
-      if (video.currentTime <= 0) {
-        directionRef.current = 'forward';
-        video.play();
+    loopIntervalRef.current = setInterval(() => {
+      if (!isPlayingVideoRef.current) {
+        if (loopIntervalRef.current) clearInterval(loopIntervalRef.current);
         return;
       }
 
-      video.currentTime -= 0.016;
-      rafRef.current = requestAnimationFrame(playBackward);
-    };
+      const current = video.currentTime;
+      const duration = video.duration;
+      const direction = directionRef.current;
 
-    const onEnded = () => {
-      directionRef.current = 'backward';
-      video.pause();
-      rafRef.current = requestAnimationFrame(playBackward);
-    };
+      if (direction === 'forward' && current >= duration - 0.1) {
+        directionRef.current = 'backward';
+        video.pause();
 
-    video.addEventListener('ended', onEnded);
+        if (backwardIntervalRef.current) {
+          clearInterval(backwardIntervalRef.current);
+        }
 
-    return () => {
-      video.removeEventListener('ended', onEnded);
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
+        backwardIntervalRef.current = setInterval(() => {
+          if (!isPlayingVideoRef.current || directionRef.current !== 'backward') {
+            if (backwardIntervalRef.current) clearInterval(backwardIntervalRef.current);
+            return;
+          }
+
+          const curr = video.currentTime;
+
+          if (curr <= 0.05) {
+            if (backwardIntervalRef.current) clearInterval(backwardIntervalRef.current);
+            directionRef.current = 'forward';
+            video.currentTime = 0;
+            video.play().catch((e) => console.error(e));
+            return;
+          }
+
+          video.currentTime = Math.max(0, curr - 0.033);
+        }, 33);
       }
-    };
-  }, []);
+    }, 100);
+  };
 
-  // 오디오 시간에 따른 스크립트 하이라이트
   useEffect(() => {
     const audio = audioRef.current;
-
-    if (!audio || !data?.script || data.script.length === 0) {
-      console.log('[timeupdate] waiting for data...');
-      return;
-    }
+    if (!audio || !data?.script || data.script.length === 0) return;
 
     const onTimeUpdate = () => {
       const currentTime = audio.currentTime;
       const scripts = data.script;
-
       const index = scripts.findIndex(
         (item) => currentTime >= item.startTime && currentTime < item.endTime
       );
-
       if (index !== -1 && index !== activeIndex) {
-        console.log('[timeupdate] active index changed:', index);
         setActiveIndex(index);
       }
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
-
-    return () => {
-      audio.removeEventListener('timeupdate', onTimeUpdate);
-    };
+    return () => audio.removeEventListener('timeupdate', onTimeUpdate);
   }, [data, activeIndex]);
 
-  // 오디오 종료 시 처리
   useEffect(() => {
     const audio = audioRef.current;
     const video = videoRef.current;
     if (!audio || !video) return;
 
     const onAudioEnded = () => {
+      isPlayingVideoRef.current = false;
+
+      if (loopIntervalRef.current) clearInterval(loopIntervalRef.current);
+      if (backwardIntervalRef.current) clearInterval(backwardIntervalRef.current);
+
       video.pause();
       directionRef.current = 'forward';
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-      }
       setIsPlaying(false);
       setStartMarquee(false);
     };
 
     audio.addEventListener('ended', onAudioEnded);
-
-    return () => {
-      audio.removeEventListener('ended', onAudioEnded);
-    };
+    return () => audio.removeEventListener('ended', onAudioEnded);
   }, []);
 
-  // 오디오 이벤트 로깅
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) {
-      console.log('[audio effect] audio element not ready');
-      return;
-    }
-
-    const log = (e: Event) => console.log('[audio event]', e.type);
-
-    audio.addEventListener('loadedmetadata', log);
-    audio.addEventListener('canplay', log);
-    audio.addEventListener('play', log);
-    audio.addEventListener('pause', log);
-    audio.addEventListener('error', log);
-
-    return () => {
-      audio.removeEventListener('loadedmetadata', log);
-      audio.removeEventListener('canplay', log);
-      audio.removeEventListener('play', log);
-      audio.removeEventListener('pause', log);
-      audio.removeEventListener('error', log);
-    };
-  }, [data]);
-
-  // 재생 핸들러
   const handlePlay = async () => {
-    console.log('[handlePlay] called');
     const video = videoRef.current;
     const audio = audioRef.current;
 
-    if (!video || !audio) {
-      console.error('[handlePlay] video or audio ref is null');
-      return;
-    }
-
-    // 데이터 로드 확인
-    if (!data) {
-      console.error('[handlePlay] data not loaded yet');
-      return;
-    }
-
-    console.log('[handlePlay] audio src:', audio.src);
-    console.log('[handlePlay] audio readyState:', audio.readyState);
-    console.log('[handlePlay] audio paused:', audio.paused);
+    if (!video || !audio || !data) return;
 
     try {
+      directionRef.current = 'forward';
+      isPlayingVideoRef.current = true;
+      video.currentTime = 0;
+      audio.currentTime = 0;
+
       await audio.play();
-      video.play();
+      await video.play();
+
       setIsPlaying(true);
       setStartMarquee(true);
+
+      startVideoLoop();
     } catch (e) {
-      console.error('[handlePlay] audio play failed', e);
+      console.error(e);
+      isPlayingVideoRef.current = false;
     }
   };
 
@@ -175,7 +150,6 @@ export default function TodayNewsPage() {
       title: article.title,
     })) ?? [];
 
-  // 로딩 상태
   if (!data) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -218,7 +192,6 @@ export default function TodayNewsPage() {
       `}</style>
 
       <div className="mx-auto w-[390px]">
-        {' '}
         <div className="relative aspect-[390/495] w-full overflow-hidden">
           <Image
             src="/logo-white.png"
@@ -235,7 +208,6 @@ export default function TodayNewsPage() {
             className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
           />
 
-          {/* image frame */}
           <div
             className="absolute top-[200px] left-1/2 flex h-[240px] w-[240px] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
             style={{
@@ -256,7 +228,6 @@ export default function TodayNewsPage() {
             )}
           </div>
 
-          {/* navigation buttons */}
           {activeIndex > 0 && (
             <button
               onClick={() => {
@@ -293,12 +264,10 @@ export default function TodayNewsPage() {
             </button>
           )}
 
-          {/* gradient overlay */}
           {!isPlaying && (
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.4)_0%,rgba(0,0,0,0.1)_50%,rgba(0,0,0,0.3)_100%)]" />
           )}
 
-          {/* play button */}
           {!isPlaying && (
             <button
               onClick={handlePlay}
@@ -308,8 +277,8 @@ export default function TodayNewsPage() {
             </button>
           )}
         </div>
-        {/* marquee title */}
-        <div className="relative h-[80px] w-full overflow-hidden border-t-2 border-b-2 border-white bg-[linear-gradient(90deg,#DCEFFF_0%,#FFFFFF_50%,#DCEFFF_100%)]">
+
+        <div className="relative h-[80px] w-full overflow-hidden border-t-2 border-b-2 border-white bg-[linear-gradient(90deg,#DCEFFF_0%,#DCEFFF_100%)]">
           {startMarquee && (
             <div className="typo-h1 text-navy-500 absolute top-1/2 left-0 w-full -translate-y-1/2 overflow-hidden">
               <div className="animate-news-marquee">
@@ -323,6 +292,7 @@ export default function TodayNewsPage() {
             </div>
           )}
         </div>
+
         <audio ref={audioRef} src={data?.audioUrl} preload="auto" playsInline />
         <NewsnackSlider items={items} />
       </div>
