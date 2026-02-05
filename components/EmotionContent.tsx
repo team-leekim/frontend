@@ -53,7 +53,7 @@ export default function EmotionContent({
       </div>
       <div className="flex w-[180px] flex-col gap-2">
         <Image
-          alt="thumbnail image"
+          alt={title}
           src={imageUrl}
           width={180}
           height={180}
