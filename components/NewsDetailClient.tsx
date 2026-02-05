@@ -46,6 +46,8 @@ export default function NewsDetailClient({ data }: { data: ContentDetailResponse
                   src={imgUrl}
                   alt={`content-image-${index}`}
                   fill
+                  priority
+                  fetchPriority="high"
                   className="object-cover"
                 />
               </div>

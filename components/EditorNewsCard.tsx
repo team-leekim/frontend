@@ -23,7 +23,9 @@ export default function EditorNewsCard({
       <Image
         src={thumbnailUrl}
         alt={title}
-        className="h-[171px] w-[171px] rounded-lg object-cover"
+        height={171}
+        width={171}
+        className="rounded-lg object-cover"
       />
       <div className="flex flex-col gap-1">
         <h3 className="typo-body-2-m line-clamp-2 text-black">{title}</h3>
