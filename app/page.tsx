@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import RecommendViewer from '@/components/viewer/RecommendViewer';
 import MainHeader from '@/components/header/MainHeader';
@@ -63,7 +63,7 @@ export default function Home() {
   }, []);
 
   // 커서 기반 무한 스크롤 데이터 로딩
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
     if (!hasNext || isLoadingRef.current) return;
 
     isLoadingRef.current = true;
@@ -75,12 +75,11 @@ export default function Home() {
       });
 
       setContents((prev) => {
-        const merged = [...prev, ...res.data.contents];
-        const uniqueMap = new Map<number, ContentItem>();
-        merged.forEach((item) => {
-          uniqueMap.set(item.id, item);
+        const itemsMap = new Map(prev.map((item) => [item.id, item]));
+        res.data.contents.forEach((item) => {
+          itemsMap.set(item.id, item);
         });
-        return Array.from(uniqueMap.values());
+        return Array.from(itemsMap.values());
       });
       setCursor(res.data.nextCursor);
       setHasNext(res.data.hasNext);
@@ -90,7 +89,7 @@ export default function Home() {
       isLoadingRef.current = false;
       setIsLoading(false);
     }
-  };
+  }, [hasNext, cursor]);
 
   // 화면 하단 감지 시 다음 페이지 요청
   useEffect(() => {
@@ -106,7 +105,7 @@ export default function Home() {
 
     if (currentLoader) observer.observe(currentLoader);
     return () => observer.disconnect();
-  }, [hasNext, cursor]);
+  }, [loadMore]);
 
   // RecommendViewer에서 쓰기 위한 카테고리 큐레이션 데이터 가공
   const categoryCurationItems = categoryBest.map((item) => ({
