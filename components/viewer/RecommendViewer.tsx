@@ -17,7 +17,6 @@ export default function RecommendViewer({ items }: RecommendViewerProps) {
         slidesPerView={1.45}
         centeredSlides
         spaceBetween={0}
-        loop
         watchSlidesProgress
         className="flex justify-center overflow-visible!"
       >
