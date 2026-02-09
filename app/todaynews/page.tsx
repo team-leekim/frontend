@@ -261,7 +261,8 @@ export default function TodayNewsPage() {
 
           {activeIndex > 0 && (
             <button
-              onClick={() => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation();
                 const audio = audioRef.current;
                 if (!audio) return;
                 const prevIndex = activeIndex - 1;
@@ -282,7 +283,8 @@ export default function TodayNewsPage() {
 
           {activeIndex < (data?.articles.length ?? 0) - 1 && (
             <button
-              onClick={() => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation();
                 const audio = audioRef.current;
                 if (!audio) return;
                 const nextIndex = activeIndex + 1;
