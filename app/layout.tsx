@@ -23,7 +23,6 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        {' '}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-ZPNXLYFWTQ"
           strategy="afterInteractive"

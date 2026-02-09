@@ -149,6 +149,7 @@ export default function TodayNewsPage() {
     data?.articles.map((article) => ({
       id: article.id,
       title: article.title,
+      publishedAt: article.publishedAt,
     })) ?? [];
 
   if (!data) {
@@ -289,6 +290,7 @@ export default function TodayNewsPage() {
         </div>
 
         <audio ref={audioRef} src={data?.audioUrl} preload="auto" playsInline />
+        <p className="typo-h3 text-black-900 px-4 pt-3">오늘의 TOP5 뉴스 바로가기</p>
         <NewsnackSlider items={items} />
       </div>
     </>

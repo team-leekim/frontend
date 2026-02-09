@@ -122,7 +122,7 @@ export default function NewsDetailClient({ data }: { data: ContentDetailResponse
         <div className="px-4">
           {/* Body */}
           <article className="typo-body-1-r text-text-1 mt-6 mb-4 whitespace-pre-line">
-            {data.body}
+            {data.body.replace(/\.\s*/g, '.\n')}
           </article>
           <span className="text-text-3 typo-body-5-m mb-4 flex items-center gap-1">
             <Icon icon="mingcute:ai-fill" width={14} height={14} className="text-navy-600" />
