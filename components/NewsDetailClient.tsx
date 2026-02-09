@@ -108,7 +108,7 @@ export default function NewsDetailClient({ data }: { data: ContentDetailResponse
         {/* Summary */}
         <section className="mx-4 flex w-[358px] flex-col gap-2 rounded-sm bg-[#F0F2F4] px-4 py-6">
           <h2 className="text-text-1 typo-btn-1-b rounded-sm">
-            💡 바쁜 당신을 위한 핵심체크! AI 3줄 핵심 브리핑
+            💡 바쁜 당신을 위한 핵심체크! AI 핵심 브리핑
           </h2>
           <ul className="text-text-2 typo-body-2-r px-2">
             {data.summary.map((s: string, i: number) => (
@@ -166,7 +166,7 @@ export default function NewsDetailClient({ data }: { data: ContentDetailResponse
           </section>
           <Divider />
           {/* Origin Articles */}
-          <section>
+          <section className="mb-10">
             <h2 className="typo-h3 my-6 text-black">연관 기사를 더 보고 싶어요</h2>
             <ul className="space-y-2">
               {data.originalArticles.map((article, i: number) => (
