@@ -111,14 +111,17 @@ export default function TodayNewsPage() {
       if (backwardIntervalRef.current) clearInterval(backwardIntervalRef.current);
 
       video.pause();
+      video.currentTime = 0;
       directionRef.current = 'forward';
+
       setIsPlaying(false);
       setStartMarquee(false);
+      setActiveIndex(0);
     };
 
     audio.addEventListener('ended', onAudioEnded);
     return () => audio.removeEventListener('ended', onAudioEnded);
-  }, []);
+  }, [data]);
 
   const handlePlay = async () => {
     const video = videoRef.current;
