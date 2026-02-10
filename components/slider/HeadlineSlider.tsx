@@ -15,12 +15,6 @@ export default function HeadlineSlider({ items, disableLink = false }: HeadlineS
   const swiperRef = useRef<SwiperType | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  useEffect(() => {
-    // Swiper 인스턴스가 생성되면 autoplay 강제 시작
-    if (swiperRef.current?.autoplay) {
-      swiperRef.current.autoplay.start();
-    }
-  }, []);
   return (
     <div className="bg-navy-200 relative mt-6 ml-4 flex h-[147px] w-[326px] justify-center overflow-hidden rounded-lg p-2">
       {disableLink ? (
@@ -42,6 +36,7 @@ export default function HeadlineSlider({ items, disableLink = false }: HeadlineS
       <Swiper
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
+          swiper.autoplay.start();
         }}
         onSlideChange={(swiper) => {
           setActiveIndex(swiper.realIndex);
