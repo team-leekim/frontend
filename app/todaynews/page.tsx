@@ -167,8 +167,6 @@ export default function TodayNewsPage() {
       setIsPaused(true);
     } else {
       // resume
-      const video = videoRef.current;
-      const audio = audioRef.current;
       if (!video || !audio) return;
 
       // 항상 루프 가능한 정상 상태로 복구
